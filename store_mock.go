@@ -6,6 +6,11 @@ type MockStore struct {
 	mock.Mock
 }
 
+func (m *MockStore) UpdateBird(bird *Bird) error {
+	rets := m.Called(bird)
+	return rets.Error(0)
+}
+
 func (m *MockStore) CreateBird(bird *Bird) error {
 	rets := m.Called(bird)
 	return rets.Error(0)

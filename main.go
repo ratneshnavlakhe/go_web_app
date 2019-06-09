@@ -14,6 +14,7 @@ func newRouter() *mux.Router {
 	r.HandleFunc("/hello", handler).Methods("GET")
 	r.HandleFunc("/bird", getBirdHandler).Methods("GET")
 	r.HandleFunc("/bird", createBirdHandler).Methods("POST")
+	r.HandleFunc("/bird", updateBirdHandler).Methods("PUT", "PATCH")
 
 	staticFileDirectory := http.Dir("./assets")
 	staticFileHandler := http.StripPrefix("/assets/", http.FileServer(staticFileDirectory))
@@ -39,7 +40,7 @@ func main() {
 	InitStore(&dbStore{db: db})
 
 	r := newRouter()
-	fmt.Println("Serving on port 8080")
+	logger.Info("Serving on port 8080")
 
 	http.ListenAndServe(":8080", r)
 

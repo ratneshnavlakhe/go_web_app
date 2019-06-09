@@ -5,6 +5,7 @@ import "database/sql"
 type Store interface {
 	CreateBird(bird *Bird) error
 	GetBirds() ([]*Bird, error)
+	UpdateBird(bird *Bird) error
 }
 
 type dbStore struct {
@@ -35,6 +36,11 @@ func (store *dbStore) GetBirds() ([]*Bird, error) {
 		birds = append(birds, bird)
 	}
 	return birds, nil
+}
+
+func (store *dbStore) UpdateBird(bird *Bird) error {
+	_, err := store.db.Query("UPDATE birds SET description = ($1) WHERE species = ($2)", bird.Description, bird.Species)
+	return err
 }
 
 var store Store

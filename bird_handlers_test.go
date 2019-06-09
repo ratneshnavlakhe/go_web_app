@@ -76,6 +76,41 @@ func TestCreateBirdHandler(t *testing.T) {
 	mockStore.AssertExpectations(t)
 }
 
+func TestUpdateBirdHandler(t *testing.T) {
+	mockStore := InitMockStore()
+
+	mockStore.On("UpdateBird", &Bird{"eagle", "A bird of prey"}).Return(nil)
+
+	form := newUpdateBirdForm()
+	req, err := http.NewRequest("PUT", "", bytes.NewBufferString(form.Encode()))
+
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Content-Length", strconv.Itoa(len(form.Encode())))
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	recorder := httptest.NewRecorder()
+
+	hf := http.HandlerFunc(updateBirdHandler)
+
+	hf.ServeHTTP(recorder, req)
+
+	if status := recorder.Code; status != http.StatusFound {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	}
+
+	mockStore.AssertExpectations(t)
+}
+
+func newUpdateBirdForm() *url.Values {
+	form := url.Values{}
+	form.Set("species", "eagle")
+	form.Set("description", "A bird of prey")
+	return &form
+}
+
 func newCreateBirdForm() *url.Values {
 	form := url.Values{}
 	form.Set("species", "eagle")

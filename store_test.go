@@ -87,3 +87,33 @@ func (s *StoreSuit) TestGetBird() {
 		s.T().Errorf("incorrect details, expected %v, got %v", expectedBird, *birds[0])
 	}
 }
+
+func (s *StoreSuit) TestUpdateBird() {
+	_ = s.store.CreateBird(&Bird{
+		Description: "test description",
+		Species:     "test species",
+	})
+
+	_ = s.store.UpdateBird(&Bird{
+		Description: "test description another",
+		Species:     "test species",
+	})
+
+	res, err := s.db.Query(`select count(*) from birds where description='test description another'`)
+	if err != nil {
+		s.T().Fatal(err)
+	}
+
+	var count int
+	for res.Next() {
+		err := res.Scan(&count)
+
+		if err != nil {
+			s.T().Error(err)
+		}
+	}
+
+	if count != 1 {
+		s.T().Errorf("incorrect count, wanted 1, got %d", count)
+	}
+}
